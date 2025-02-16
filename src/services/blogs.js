@@ -1,8 +1,10 @@
 import axios from 'axios'
 const baseUrl = '/api/blogs'
 
-const getFormattedToken = token => {
-  return `Bearer ${token}`
+let formattedToken = null
+
+const setToken = token => {
+  formattedToken = `Bearer ${token}`
 }
 
 const getAll = () => {
@@ -10,12 +12,12 @@ const getAll = () => {
   return request.then(response => response.data)
 }
 
-const create = async ({ title, author, url, token }) => {
+const create = async ({ title, author, url }) => {
   const config = {
-    headers: { Authorization: getFormattedToken(token) }
+    headers: { Authorization: formattedToken }
   }
   const response = await axios.post(baseUrl, { title, author, url }, config)
   return response.data
 }
 
-export default { getAll, create }
+export default { getAll, create, setToken }

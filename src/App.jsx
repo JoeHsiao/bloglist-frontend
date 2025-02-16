@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
+import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Togglable from './components/Toggable'
@@ -27,9 +28,6 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [notificationMessage, setNotificationMessage] = useState('')
   const [notificationColor, setNotificationColor] = useState('')
 
@@ -46,6 +44,7 @@ const App = () => {
     if (loggedBlogappUser) {
       const user = JSON.parse(loggedBlogappUser)
       setUser(user)
+      blogService.setToken(user.token)
     }
   }, [])
 
@@ -69,6 +68,7 @@ const App = () => {
       console.log('user', user)
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
       setUser(user)
+      blogService.setToken(user.token)
       setUsername('')
       setPassword('')
     } catch (exception) {
@@ -80,20 +80,15 @@ const App = () => {
   const handleLogout = async () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
+    blogService.setToken(null)
   }
 
-  const handleCreateBlog = async (event) => {
-    event.preventDefault()
+  const createBlogAction = async (blogObj) => {
     blogFormRef.current.toggleVisible()
 
-    const user = JSON.parse(window.localStorage.getItem('loggedBlogappUser'))
-    const token = user.token
-    const blog = await blogService.create({
-      title, author, url, token
-    })
-    const updatedList = await blogService.getAll()
-    setBlogs(updatedList)
-    displayNotification(`a new blog ${title} by ${author} added`, 'green', 5000)
+    const newBlog = await blogService.create(blogObj)
+    setBlogs(blogs.concat(newBlog))
+    displayNotification(`a new blog ${newBlog.title} by ${newBlog.author} added`, 'green', 5000)
   }
 
   if (user === null) {
@@ -131,13 +126,7 @@ const App = () => {
       <p>{user.name} logged in<button onClick={handleLogout}>logout</button></p>
 
       <Togglable buttonLabel='new note' ref={blogFormRef}>
-        <form onSubmit={handleCreateBlog}>
-          <h2>create new</h2>
-          <div>title<input id='0' onChange={({ target }) => setTitle(target.value)}></input></div>
-          <div>author<input id='1' onChange={({ target }) => setAuthor(target.value)}></input></div>
-          <div>url<input id='2' onChange={({ target }) => setUrl(target.value)}></input></div>
-          <button type='submit'>create</button>
-        </form>
+        <BlogForm createBlogAction={createBlogAction} />
       </Togglable>
 
       {blogs.map(blog =>
