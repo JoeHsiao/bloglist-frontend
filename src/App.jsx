@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Togglable from './components/Toggable'
 
 const Notification = ({ message, color }) => {
   if (!message)
@@ -31,6 +32,8 @@ const App = () => {
   const [url, setUrl] = useState('')
   const [notificationMessage, setNotificationMessage] = useState('')
   const [notificationColor, setNotificationColor] = useState('')
+
+  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -81,6 +84,8 @@ const App = () => {
 
   const handleCreateBlog = async (event) => {
     event.preventDefault()
+    blogFormRef.current.toggleVisible()
+
     const user = JSON.parse(window.localStorage.getItem('loggedBlogappUser'))
     const token = user.token
     const blog = await blogService.create({
@@ -124,13 +129,17 @@ const App = () => {
       <h2>blogs</h2>
       <Notification message={notificationMessage} color={notificationColor} />
       <p>{user.name} logged in<button onClick={handleLogout}>logout</button></p>
-      <h2>create new</h2>
-      <form onSubmit={handleCreateBlog}>
-        <div>title<input id='0' onChange={({ target }) => setTitle(target.value)}></input></div>
-        <div>author<input id='1' onChange={({ target }) => setAuthor(target.value)}></input></div>
-        <div>url<input id='2' onChange={({ target }) => setUrl(target.value)}></input></div>
-        <button type='submit'>create</button>
-      </form>
+
+      <Togglable buttonLabel='new note' ref={blogFormRef}>
+        <form onSubmit={handleCreateBlog}>
+          <h2>create new</h2>
+          <div>title<input id='0' onChange={({ target }) => setTitle(target.value)}></input></div>
+          <div>author<input id='1' onChange={({ target }) => setAuthor(target.value)}></input></div>
+          <div>url<input id='2' onChange={({ target }) => setUrl(target.value)}></input></div>
+          <button type='submit'>create</button>
+        </form>
+      </Togglable>
+
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
