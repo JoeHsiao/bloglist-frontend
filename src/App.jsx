@@ -86,6 +86,17 @@ const App = () => {
     blogService.setToken(null)
   }
 
+  const handleRemoveBlog = async (blog) => {
+    if (window.confirm(`remove blog ${blog.title} by ${blog.author}`)) {
+      try {
+        await blogService.remove(blog.id)
+        setBlogs(blogs.filter(b => b.id != blog.id))
+      } catch (error) {
+        console.error('Error remove blog', error.message)
+      }
+    }
+  }
+
   const createBlogAction = async (blogObj) => {
     blogFormRef.current.toggleVisible()
 
@@ -132,9 +143,10 @@ const App = () => {
         <BlogForm createBlogAction={createBlogAction} />
       </Togglable>
 
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
-      )}
+      {blogs.map(blog => {
+        const isIdMatch = blog.user.username === user.username ? true : false
+        return <Blog key={blog.id} blog={blog} showRemoveButton={isIdMatch} handleRemoveBlog={handleRemoveBlog} />
+      })}
     </div>
   )
 }
