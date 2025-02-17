@@ -20,4 +20,11 @@ const create = async ({ title, author, url }) => {
   return response.data
 }
 
-export default { getAll, create, setToken }
+const update = async (blogObj) => {
+  const id = blogObj.id
+  console.log('fronend send', blogObj)
+  const response = await axios.put(`${baseUrl}/${id}`, blogObj)
+  return response.data
+}
+
+export default { getAll, create, setToken, update }
