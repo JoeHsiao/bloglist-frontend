@@ -90,7 +90,7 @@ const App = () => {
     if (window.confirm(`remove blog ${blog.title} by ${blog.author}`)) {
       try {
         await blogService.remove(blog.id)
-        setBlogs(blogs.filter(b => b.id != blog.id))
+        setBlogs(blogs.filter(b => b.id !== blog.id))
       } catch (error) {
         console.error('Error remove blog', error.message)
       }
@@ -144,6 +144,7 @@ const App = () => {
       </Togglable>
 
       {blogs.map(blog => {
+        console.log(blog, user)
         const isIdMatch = blog.user.username === user.username ? true : false
         return <Blog key={blog.id} blog={blog} showRemoveButton={isIdMatch} handleRemoveBlog={handleRemoveBlog} />
       })}

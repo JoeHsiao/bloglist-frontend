@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import blogService from '../services/blogs'
+import PropTypes from 'prop-types'
 
 const Blog = ({ blog, showRemoveButton, handleRemoveBlog }) => {
   const blogStyle = {
@@ -24,7 +25,7 @@ const Blog = ({ blog, showRemoveButton, handleRemoveBlog }) => {
     const oneMoreLike = { id: blog.id, likes: likes + 1 }
     try {
       const newBlog = await blogService.update(oneMoreLike)
-      console.log("newBlog", newBlog)
+      console.log('newBlog', newBlog)
       setLikes(newBlog.likes)
     } catch (error) {
       console.error('Error liking the blog')
@@ -48,6 +49,12 @@ const Blog = ({ blog, showRemoveButton, handleRemoveBlog }) => {
       }
     </div>
   )
+}
+
+Blog.propTypes = {
+  blog: PropTypes.object.isRequired,
+  showRemoveButton: PropTypes.bool.isRequired,
+  handleRemoveBlog: PropTypes.func.isRequired
 }
 
 export default Blog
