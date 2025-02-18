@@ -42,3 +42,22 @@ test('renders url and like in detail view', async () => {
   expect(likesElement).toBeDefined()
   expect(urlElement).toBeDefined()
 })
+
+test('event handler passed in being called', async () => {
+  const blogObj = {
+    title: 'test title',
+    author: 'test author',
+    url: 'test url',
+    likes: 0
+  }
+  const mockHandler = vi.fn()
+  const { container } = render(<Blog blog={blogObj} showRemoveButton={true} handleRemoveBlog={mockHandler} />)
+
+  const user = userEvent.setup()
+  const viewButton = screen.getByText('view')
+  await user.click(viewButton)
+  const removeButton = screen.getByText('remove')
+  await user.click(removeButton)
+
+  expect(mockHandler.mock.calls).toHaveLength(1)
+})
