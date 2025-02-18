@@ -31,8 +31,6 @@ test('renders url and like in detail view', async () => {
   const button = screen.getByText('view')
   await user.click(button)
 
-  screen.debug()
-
   const titleElement = screen.getByText('test title')
   const authorElement = screen.getByText('test author')
   const likesElement = screen.getByText('likes', { exact: false })
