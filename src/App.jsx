@@ -75,7 +75,7 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      displayNotification('wrong username of password', 'red', 0)
+      displayNotification('wrong username or password', 'red', 0)
       console.log('handleLogin', exception)
     }
   }
@@ -146,6 +146,7 @@ const App = () => {
       {blogs.map(blog => {
         console.log(blog, user)
         const isIdMatch = blog.user.username === user.username ? true : false
+        console.log(blog.title, isIdMatch)
         return <Blog key={blog.id} blog={blog} showRemoveButton={isIdMatch} handleRemoveBlog={handleRemoveBlog} />
       })}
     </div>
