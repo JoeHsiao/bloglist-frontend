@@ -22,13 +22,14 @@ const create = async ({ title, author, url }) => {
 
 const update = async (blogObj) => {
   const id = blogObj.id
-  console.log('fronend send', blogObj)
+  console.log('frontend send', blogObj)
   const response = await axios.put(`${baseUrl}/${id}`, blogObj)
   return response.data
 }
 
 const remove = async (id) => {
   const response = await axios.delete(`${baseUrl}/${id}`)
+  return response
 }
 
 export default { getAll, create, setToken, update, remove }

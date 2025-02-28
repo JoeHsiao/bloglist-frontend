@@ -6,7 +6,7 @@ import loginService from './services/login'
 import Togglable from './components/Toggable'
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotificationTemporarily, clear } from './reducers/notificationReducer'
-import { initializeBlogs, clear as clearBlogs, create } from './reducers/blogsReducer'
+import { initializeBlogs, clear as clearBlogs, create, deleteBlog } from './reducers/blogsReducer'
 
 const Notification = () => {
   const message = useSelector((state) => state.notification.content)
@@ -79,12 +79,7 @@ const App = () => {
 
   const handleRemoveBlog = async (blog) => {
     if (window.confirm(`remove blog ${blog.title} by ${blog.author}`)) {
-      try {
-        await blogService.remove(blog.id)
-        setBlogs(blogs.filter(b => b.id !== blog.id))
-      } catch (error) {
-        console.error('Error remove blog', error.message)
-      }
+      dispatch(deleteBlog(blog))
     }
   }
 
