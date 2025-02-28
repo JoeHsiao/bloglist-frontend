@@ -6,6 +6,7 @@ import loginService from './services/login'
 import Togglable from './components/Toggable'
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotificationTemporarily, clear } from './reducers/notificationReducer'
+import { initializeBlogs, clear as clearBlogs, create } from './reducers/blogsReducer'
 
 const Notification = () => {
   const message = useSelector((state) => state.notification.content)
@@ -28,7 +29,7 @@ const Notification = () => {
 }
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  const blogs = useSelector(state => state.blogs)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -37,14 +38,10 @@ const App = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    if (!user)
+    if (!user) {
       return
-    const sortBlogs = async () => {
-      const blog = await blogService.getAll()
-      const sortedBlogByLikes = blog.sort((a, b) => b.likes - a.likes)
-      setBlogs(sortedBlogByLikes)
     }
-    sortBlogs()
+    dispatch(initializeBlogs())
   }, [user])
 
   useEffect(() => {
@@ -77,6 +74,7 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
     blogService.setToken(null)
+    dispatch(clearBlogs())
   }
 
   const handleRemoveBlog = async (blog) => {
@@ -94,10 +92,11 @@ const App = () => {
     blogFormRef.current.toggleVisible()
 
     const newBlog = await blogService.create(blogObj)
-    setBlogs(blogs.concat(newBlog))
-    // displayNotification(`a new blog ${newBlog.title} by ${newBlog.author} added`, '#00FF00', 5000)
+    dispatch(create(newBlog))
     dispatch(setNotificationTemporarily(`a new blog ${newBlog.title} by ${newBlog.author} added`, '#00FF00', 5))
   }
+
+  const byLikes = (a, b) => b.likes - a.likes
 
   if (user === null) {
     return (
@@ -137,7 +136,7 @@ const App = () => {
         <BlogForm createBlogAction={createBlogAction} />
       </Togglable>
 
-      {blogs.map(blog => {
+      {[...blogs].sort(byLikes).map(blog => {
         const isIdMatch = blog.user.username === user.username ? true : false
         return <Blog key={blog.id} blog={blog} showRemoveButton={isIdMatch} handleRemoveBlog={handleRemoveBlog} />
       })}
