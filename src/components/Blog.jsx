@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import blogService from '../services/blogs'
 import PropTypes from 'prop-types'
+import { useQueryClient, useMutation } from '@tanstack/react-query'
 
 const Blog = ({ blog, showRemoveButton, handleRemoveBlog }) => {
   const blogStyle = {
@@ -10,7 +11,8 @@ const Blog = ({ blog, showRemoveButton, handleRemoveBlog }) => {
     borderWidth: 1,
     marginBottom: 5
   }
-
+  if (blog.title === '555')
+    console.log('blog reload', blog)
   const removeButtonStyle = {
     color: 'white',
     backgroundColor: 'blue',
@@ -18,18 +20,24 @@ const Blog = ({ blog, showRemoveButton, handleRemoveBlog }) => {
   }
 
   const [showDetail, setShowDetail] = useState(false)
-  const [likes, setLikes] = useState(blog.likes)
 
-  const handleLike = async () => {
-    console.log(blog)
-    const oneMoreLike = { id: blog.id, likes: likes + 1 }
-    try {
-      const newBlog = await blogService.update(oneMoreLike)
-      console.log('newBlog', newBlog)
-      setLikes(newBlog.likes)
-    } catch (error) {
-      console.error('Error liking the blog')
+  const queryClient = useQueryClient()
+  const blogMutation = useMutation({
+    mutationFn: (blog) => {
+      return blogService.update(blog)
+    },
+    onSuccess: () => {
+      console.log('onSuccess')
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    },
+    onError: (err) => {
+      console.error('Error liking the blog', err.message)
     }
+  })
+
+  const handleLike = () => {
+    const oneMoreLike = { ...blog, likes: blog.likes + 1 }
+    blogMutation.mutate(oneMoreLike)
   }
 
   return (
@@ -42,7 +50,7 @@ const Blog = ({ blog, showRemoveButton, handleRemoveBlog }) => {
         <div style={blogStyle}>
           <div>{blog.title}</div>
           <div>{blog.url}</div>
-          <div>likes {likes} <button onClick={handleLike}>like</button></div>
+          <div>likes {blog.likes} <button onClick={handleLike}>like</button></div>
           <div>{blog.author}</div>
           <button style={removeButtonStyle} onClick={() => handleRemoveBlog(blog)}>remove</button>
         </div>
