@@ -5,6 +5,7 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import Togglable from './components/Toggable'
 import { NotificationContext } from './NotificationContext'
+import userContext from './UserContext'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 const Notification = () => {
@@ -31,9 +32,8 @@ const Notification = () => {
 const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
   const [, notificationDispatch] = useContext(NotificationContext)
-
+  const [user, userDispatch] = useContext(userContext)
   const blogFormRef = useRef()
 
   const queryClient = useQueryClient()
@@ -49,7 +49,7 @@ const App = () => {
     const loggedBlogappUser = window.localStorage.getItem('loggedBlogappUser')
     if (loggedBlogappUser) {
       const user = JSON.parse(loggedBlogappUser)
-      setUser(user)
+      userDispatch({ type: 'SET', payload: user })
       blogService.setToken(user.token)
     }
   }, [])
@@ -72,7 +72,7 @@ const App = () => {
       })
       console.log('user', user)
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
-      setUser(user)
+      userDispatch({ type: 'SET', payload: user })
       blogService.setToken(user.token)
       setUsername('')
       setPassword('')
@@ -84,20 +84,9 @@ const App = () => {
 
   const handleLogout = async () => {
     window.localStorage.removeItem('loggedBlogappUser')
-    setUser(null)
+    userDispatch({ type: 'SET', payload: null })
     blogService.setToken(null)
   }
-
-  // const handleRemoveBlog = async (blog) => {
-  //   if (window.confirm(`remove blog ${blog.title} by ${blog.author}`)) {
-  //     try {
-  //       await blogService.remove(blog.id)
-  //       setBlogs(blogs.filter(b => b.id !== blog.id))
-  //     } catch (error) {
-  //       console.error('Error remove blog', error.message)
-  //     }
-  //   }
-  // }
 
   // const blogs = queryClient.getQueryData({ queryKey: ['blogs'] })
   const blogs = result.data
