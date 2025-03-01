@@ -5,7 +5,7 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import Togglable from './components/Toggable'
 import { NotificationContext } from './NotificationContext'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 const Notification = () => {
   const [notification] = useContext(NotificationContext)
@@ -29,7 +29,6 @@ const Notification = () => {
 }
 
 const App = () => {
-  // const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -37,22 +36,14 @@ const App = () => {
 
   const blogFormRef = useRef()
 
+  const queryClient = useQueryClient()
+
   const result = useQuery({
     queryKey: ['blogs'],
     queryFn: async () => await blogService.getAll()
   })
 
   console.log('result', result)
-  const blogs = result.data
-
-  // useEffect(() => {
-  //   const sortBlogs = async () => {
-  //     const blog = await blogService.getAll()
-  //     const sortedBlogByLikes = blog.sort((a, b) => b.likes - a.likes)
-  //     setBlogs(sortedBlogByLikes)
-  //   }
-  //   sortBlogs()
-  // }, [])
 
   useEffect(() => {
     const loggedBlogappUser = window.localStorage.getItem('loggedBlogappUser')
@@ -108,13 +99,8 @@ const App = () => {
     }
   }
 
-  const createBlogAction = async (blogObj) => {
-    blogFormRef.current.toggleVisible()
-
-    const newBlog = await blogService.create(blogObj)
-    setBlogs(blogs.concat(newBlog))
-    displayNotification(`a new blog ${newBlog.title} by ${newBlog.author} added`, 'green', 5000)
-  }
+  // const blogs = queryClient.getQueryData({ queryKey: ['blogs'] })
+  const blogs = result.data
 
   if (result.isLoading) {
     return (
@@ -157,13 +143,11 @@ const App = () => {
       <p>{user.name} logged in<button onClick={handleLogout}>logout</button></p>
 
       <Togglable buttonLabel='new blog' ref={blogFormRef}>
-        <BlogForm createBlogAction={createBlogAction} />
+        <BlogForm />
       </Togglable>
 
       {blogs.map(blog => {
-        console.log(blog, user)
         const isIdMatch = blog.user.username === user.username ? true : false
-        console.log(blog.title, isIdMatch)
         return <Blog key={blog.id} blog={blog} showRemoveButton={isIdMatch} handleRemoveBlog={handleRemoveBlog} />
       })}
     </div>
