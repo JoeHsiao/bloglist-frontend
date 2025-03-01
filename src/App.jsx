@@ -1,11 +1,15 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useContext } from 'react'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Togglable from './components/Toggable'
+import { NotificationContext } from './NotificationContext'
 
-const Notification = ({ message, color }) => {
+const Notification = () => {
+  const [notification] = useContext(NotificationContext)
+  const message = notification.content
+  const color = notification.color
   if (!message)
     return null
 
@@ -28,8 +32,7 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [notificationMessage, setNotificationMessage] = useState('')
-  const [notificationColor, setNotificationColor] = useState('')
+  const [, notificationDispatch] = useContext(NotificationContext)
 
   const blogFormRef = useRef()
 
@@ -52,18 +55,17 @@ const App = () => {
   }, [])
 
   const displayNotification = (message, color, time) => {
-    setNotificationMessage(message)
-    setNotificationColor(color)
+    notificationDispatch({ type: 'SET', payload: { content: message, color: color } })
     if (time > 0) {
       setTimeout(() => {
-        setNotificationMessage('')
+        notificationDispatch({ type: 'CLEAR', payload: {} })
       }, time)
     }
   }
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    setNotificationMessage('')
+    notificationDispatch({ type: 'CLEAR' })
     try {
       const user = await loginService.login({
         username, password
@@ -109,7 +111,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
-        <Notification message={notificationMessage} color={notificationColor} />
+        <Notification />
         <form onSubmit={handleLogin}>
           <div> username
             <input
@@ -136,7 +138,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <Notification message={notificationMessage} color={notificationColor} />
+      <Notification />
       <p>{user.name} logged in<button onClick={handleLogout}>logout</button></p>
 
       <Togglable buttonLabel='new blog' ref={blogFormRef}>
