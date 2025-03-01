@@ -3,7 +3,7 @@ import blogService from '../services/blogs'
 import PropTypes from 'prop-types'
 import { useQueryClient, useMutation } from '@tanstack/react-query'
 
-const Blog = ({ blog, showRemoveButton, handleRemoveBlog }) => {
+const Blog = ({ blog, showRemoveButton }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -35,9 +35,25 @@ const Blog = ({ blog, showRemoveButton, handleRemoveBlog }) => {
     }
   })
 
+  const removeMutation = useMutation({
+    mutationFn: (blog) => {
+      return blogService.remove(blog.id)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    },
+    onError: (err) => {
+      console.error('Error remove the blog', err.message)
+    }
+  })
+
   const handleLike = () => {
     const oneMoreLike = { ...blog, likes: blog.likes + 1 }
     blogMutation.mutate(oneMoreLike)
+  }
+
+  const handleRemoveBlog = () => {
+    removeMutation.mutate(blog)
   }
 
   return (
@@ -62,7 +78,6 @@ const Blog = ({ blog, showRemoveButton, handleRemoveBlog }) => {
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
   showRemoveButton: PropTypes.bool.isRequired,
-  handleRemoveBlog: PropTypes.func.isRequired
 }
 
 export default Blog
