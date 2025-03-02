@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setNotificationTemporarily, clear } from './reducers/notificationReducer'
 import { clear as clearBlogs } from './reducers/blogsReducer'
 import { set } from './reducers/signInUserReducer'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import Users from './components/Users'
 import BlogList from './components/BlogList'
 import User from './components/User'
@@ -70,6 +70,11 @@ const App = () => {
     blogService.setToken(null)
     dispatch(clearBlogs())
   }
+
+  const padding = {
+    padding: '5px',
+  }
+
   if (user === null) {
     return (
       <div>
@@ -100,11 +105,11 @@ const App = () => {
 
   return (
     <div>
-      <h2>blogs</h2>
       <Notification />
-      <p>{user.name} logged in<button onClick={handleLogout}>logout</button></p>
-
       <Router>
+        <Link to='/' style={padding}>blogs</Link>
+        <Link to='/users' style={padding}>users</Link>
+        {user.name} logged in<button onClick={handleLogout}>logout</button>
         <Routes>
           <Route path='/' element={<BlogList />} />
           <Route path='/users' element={<Users />} />
