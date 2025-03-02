@@ -1,16 +1,14 @@
-import usersService from '../services/users'
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { getAllUsers } from '../reducers/usersReducer'
+import { Link } from 'react-router-dom'
 
 const Users = () => {
-  const [users, setUsers] = useState([])
-
-  const fetchUsers = async () => {
-    const userList = await usersService.getAll()
-    setUsers(userList)
-  }
+  const dispatch = useDispatch()
+  const users = useSelector(state => state.users)
 
   useEffect(() => {
-    fetchUsers()
+    dispatch(getAllUsers())
   }, [])
 
   return (
@@ -26,7 +24,7 @@ const Users = () => {
         <tbody>
           {users.map(user => (
             <tr key={user.id}>
-              <td>{user.name}</td>
+              <td><Link to={`/users/${user.id}`}>{user.name}</Link></td>
               <td>{user.blogs.length}</td>
             </tr>
           ))}

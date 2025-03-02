@@ -8,6 +8,7 @@ import { set } from './reducers/signInUserReducer'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Users from './components/Users'
 import BlogList from './components/BlogList'
+import User from './components/User'
 
 const Notification = () => {
   const message = useSelector((state) => state.notification.content)
@@ -105,8 +106,8 @@ const App = () => {
       <Router>
         <Routes>
           <Route path='/' element={<BlogList />} />
-          <Route path='/users' element={<Users />}>
-          </Route>
+          <Route path='/users' element={<Users />} />
+          <Route path='/users/:id' element={<User />} />
         </Routes>
       </Router>
     </div >
