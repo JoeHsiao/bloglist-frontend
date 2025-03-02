@@ -31,7 +31,7 @@ const BlogList = () => {
   }
 
   const byLikes = (a, b) => b.likes - a.likes
-
+  console.log(blogs)
   return (
     <div>
       <Togglable buttonLabel='new blog' ref={blogFormRef}>

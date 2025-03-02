@@ -9,6 +9,7 @@ const User = () => {
   if (!user) {
     return <h3>Loading...</h3>
   }
+  console.log(user);
 
   return (
     <div>
