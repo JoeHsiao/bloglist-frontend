@@ -7,7 +7,7 @@ const User = () => {
   const user = users.find(u => u.id === id)
 
   if (!user) {
-    return null
+    return <h3>Loading...</h3>
   }
 
   return (

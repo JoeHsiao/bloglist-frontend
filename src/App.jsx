@@ -9,6 +9,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Users from './components/Users'
 import BlogList from './components/BlogList'
 import User from './components/User'
+import BlogDetails from './components/BlogDetails'
 
 const Notification = () => {
   const message = useSelector((state) => state.notification.content)
@@ -108,6 +109,7 @@ const App = () => {
           <Route path='/' element={<BlogList />} />
           <Route path='/users' element={<Users />} />
           <Route path='/users/:id' element={<User />} />
+          <Route path='/blogs/:id' element={<BlogDetails />} />
         </Routes>
       </Router>
     </div >

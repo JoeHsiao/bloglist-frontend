@@ -3,7 +3,7 @@ import BlogForm from './BlogForm'
 import Togglable from './Toggable'
 import { useDispatch, useSelector } from 'react-redux'
 import { useRef, useEffect } from 'react'
-import { initializeBlogs, create, deleteBlog } from '../reducers/blogsReducer'
+import { initializeBlogs, create } from '../reducers/blogsReducer'
 import blogService from '../services/blogs'
 import { setNotificationTemporarily } from '../reducers/notificationReducer'
 
@@ -21,12 +21,6 @@ const BlogList = () => {
     }
     dispatch(initializeBlogs())
   }, [user])
-
-  const handleRemoveBlog = async (blog) => {
-    if (window.confirm(`remove blog ${blog.title} by ${blog.author}`)) {
-      dispatch(deleteBlog(blog))
-    }
-  }
 
   const createBlogAction = async (blogObj) => {
     blogFormRef.current.toggleVisible()
@@ -46,7 +40,7 @@ const BlogList = () => {
 
       {[...blogs].sort(byLikes).map(blog => {
         const isIdMatch = blog.user.username === user.username ? true : false
-        return <Blog key={blog.id} blog={blog} showRemoveButton={isIdMatch} handleRemoveBlog={handleRemoveBlog} />
+        return <Blog key={blog.id} blog={blog} showRemoveButton={isIdMatch} />
       })}
     </div>
   )
