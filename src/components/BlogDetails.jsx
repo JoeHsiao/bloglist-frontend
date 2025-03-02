@@ -9,8 +9,6 @@ const BlogDetails = () => {
     return state.blogs.find(x => x.id === id)
   })
 
-  const comments = blog.comments
-
   const dispatch = useDispatch()
   const handleLike = async () => {
     dispatch(likeBlog(blog))
@@ -18,6 +16,7 @@ const BlogDetails = () => {
 
   if (!blog)
     return null
+  const comments = blog.comments
 
   return (
     <div>
