@@ -10,6 +10,7 @@ import Users from './components/Users'
 import BlogList from './components/BlogList'
 import User from './components/User'
 import BlogDetails from './components/BlogDetails'
+import { Container } from '@mui/material'
 
 const Notification = () => {
   const message = useSelector((state) => state.notification.content)
@@ -77,7 +78,7 @@ const App = () => {
 
   if (user === null) {
     return (
-      <div>
+      <Container>
         <h2>Log in to application</h2>
         <Notification />
         <form onSubmit={handleLogin}>
@@ -99,7 +100,7 @@ const App = () => {
           </div>
           <button type='submit'>login</button>
         </form>
-      </div >
+      </Container>
     )
   }
 

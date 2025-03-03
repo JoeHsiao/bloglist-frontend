@@ -12,9 +12,9 @@ const Blog = ({ blog }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div>
       <Link to={`/blogs/${blog.id}`}>
-        {blog.title} {blog.author}
+        {blog.title}
       </Link>
     </div>
   )

@@ -6,6 +6,8 @@ import { useRef, useEffect } from 'react'
 import { initializeBlogs, create } from '../reducers/blogsReducer'
 import blogService from '../services/blogs'
 import { setNotificationTemporarily } from '../reducers/notificationReducer'
+import { TableContainer, Table, TableBody, TableRow, TableCell } from '@mui/material'
+import Paper from '@mui/material/Paper'
 
 const BlogList = () => {
 
@@ -37,10 +39,26 @@ const BlogList = () => {
         <BlogForm createBlogAction={createBlogAction} />
       </Togglable>
 
-      {[...blogs].sort(byLikes).map(blog => {
-        const isIdMatch = blog.user.username === user.username ? true : false
-        return <Blog key={blog.id} blog={blog} showRemoveButton={isIdMatch} />
-      })}
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 350 }} aria-label="blog table">
+          <TableBody>
+            {[...blogs].sort(byLikes).map(blog => {
+              const isIdMatch = blog.user.username === user.username ? true : false
+              return (
+                <TableRow key={blog.id}>
+                  <TableCell>
+                    <Blog key={blog.id} blog={blog} showRemoveButton={isIdMatch} />
+                  </TableCell>
+                  <TableCell>
+                    {blog.author}
+                  </TableCell>
+                </TableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
     </div>
   )
 }
